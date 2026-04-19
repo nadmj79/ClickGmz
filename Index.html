@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أول كلمة تخطر ببالك</title>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Readex+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --paper: #fdfaf4;
+    --ink: #1a1410;
+    --ink2: #4a3f30;
+    --ink3: #9a8a72;
+    --red: #e63030;
+    --green: #1a8a4a;
+    --amber: #d4820a;
+    --line: rgba(26,20,16,0.08);
+  }
+
+- { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+background: var(–bg);
+font-family: ‘Almarai’, sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+position: relative;
+}
+
+/* Paper texture lines */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image: repeating-linear-gradient(
+transparent,
+transparent 31px,
+var(–line) 31px,
+var(–line) 32px
+);
+pointer-events: none;
+z-index: 0;
+}
+
+/* Grain overlay */
+body::after {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23noise)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+pointer-events: none;
+z-index: 0;
+opacity: 0.5;
+}
+
+.container {
+position: relative;
+z-index: 10;
+width: 100%;
+max-width: 440px;
+padding: 20px 16px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 16px;
+min-height: 100vh;
+justify-content: center;
+}
+
+.screen { display: none; width: 100%; flex-direction: column; align-items: center; gap: 16px; }
+.screen.active { display: flex; }
+
+/* ========== HOME ========== */
+.brand {
+text-align: center;
+animation: dropIn 0.7s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.brand-icon {
+font-size: 3.5rem;
+display: block;
+margin-bottom: 4px;
+animation: wobble 3s ease-in-out infinite;
+}
+
+@keyframes wobble {
+0%,100% { transform: rotate(-3deg); }
+50% { transform: rotate(3deg); }
+}
+
+.brand-title {
+font-family: ‘Readex Pro’, sans-serif;
+font-size: 1.7rem;
+font-weight: 700;
+color: var(–ink);
+line-height: 1.2;
+}
+
+.brand-em {
+color: var(–red);
+font-style: italic;
+}
+
+.brand-sub {
+font-size: 0.82rem;
+color: var(–ink3);
+margin-top: 6px;
+line-height: 1.5;
+}
+
+@keyframes dropIn {
+from { opacity:0; transform:translateY(-40px) scale(0.9); }
+to   { opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* Mode cards */
+.modes-title {
+font-size: 0.78rem;
+color: var(–ink3);
+text-transform: uppercase;
+letter-spacing: 2px;
+align-self: flex-start;
+margin-top: 4px;
+animation: fadeUp 0.6s 0.2s both;
+}
+
+.mode-cards {
+display: flex;
+flex-direction: column;
+gap: 10px;
+width: 100%;
+animation: fadeUp 0.6s 0.3s both;
+}
+
+@keyframes fadeUp {
+from { opacity:0; transform:translateY(20px); }
+to   { opacity:1; transform:translateY(0); }
+}
+
+.mode-card {
+background: var(–paper);
+border: 2px solid transparent;
+border-radius: 16px;
+padding: 16px 18px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+gap: 14px;
+box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.mode-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.mode-card.selected { border-color: var(–red); background: #fff5f5; }
+
+.mode-icon { font-size: 2rem; flex-shrink: 0; }
+.mode-info { flex: 1; }
+.mode-name { font-weight: 700; font-size: 0.95rem; color: var(–ink); }
+.mode-desc { font-size: 0.75rem; color: var(–ink3); margin-top: 2px; line-height: 1.4; }
+
+.mode-badge {
+font-size: 0.65rem;
+background: var(–red);
+color: white;
+padding: 2px 8px;
+border-radius: 20px;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+flex-shrink: 0;
+}
+
+/* Cat filter */
+.cat-row {
+display: flex;
+gap: 8px;
+width: 100%;
+overflow-x: auto;
+padding-bottom: 4px;
+animation: fadeUp 0.6s 0.4s both;
+scrollbar-width: none;
+}
+.cat-row::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+flex-shrink: 0;
+padding: 6px 14px;
+border-radius: 30px;
+border: 1.5px solid var(–line);
+background: var(–paper);
+color: var(–ink2);
+font-family: ‘Almarai’, sans-serif;
+font-size: 0.78rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+white-space: nowrap;
+}
+
+.cat-pill:hover { border-color: var(–ink); }
+.cat-pill.active { background: var(–ink); color: white; border-color: var(–ink); }
+
+.play-btn {
+width: 100%;
+padding: 18px;
+background: var(–ink);
+color: white;
+border: none;
+border-radius: 16px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 1.1rem;
+font-weight: 800;
+cursor: pointer;
+transition: all 0.2s ease;
+letter-spacing: 0.5px;
+animation: fadeUp 0.6s 0.5s both;
+position: relative;
+overflow: hidden;
+}
+
+.play-btn::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.08) 100%);
+}
+
+.play-btn:hover { transform: translateY(-3px); background: #2d2418; box-shadow: 0 8px 30px rgba(26,20,16,0.4); }
+.play-btn:active { transform: scale(0.98); }
+
+/* ========== SOLO GAME ========== */
+.game-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+width: 100%;
+}
+
+.score-tag {
+background: var(–paper);
+border: 1.5px solid var(–line);
+border-radius: 10px;
+padding: 6px 14px;
+text-align: center;
+box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.score-lbl { font-size: 0.6rem; color: var(–ink3); text-transform: uppercase; letter-spacing: 1px; }
+.score-num { font-family: ‘Readex Pro’, sans-serif; font-size: 1.4rem; font-weight: 700; color: var(–ink); line-height: 1; }
+
+.round-tag {
+background: var(–red);
+color: white;
+border-radius: 10px;
+padding: 6px 14px;
+font-size: 0.78rem;
+font-weight: 700;
+}
+
+/* Word display */
+.word-stage {
+width: 100%;
+background: var(–paper);
+border-radius: 24px;
+padding: 40px 20px;
+text-align: center;
+position: relative;
+box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+border: 1px solid rgba(26,20,16,0.07);
+overflow: hidden;
+min-height: 180px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 10px;
+}
+
+.word-stage::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 4px;
+background: var(–red);
+}
+
+.word-hint { font-size: 0.75rem; color: var(–ink3); letter-spacing: 1px; text-transform: uppercase; }
+
+.word-big {
+font-family: ‘Readex Pro’, sans-serif;
+font-size: 3rem;
+font-weight: 700;
+color: var(–ink);
+line-height: 1;
+animation: wordPop 0.4s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+@keyframes wordPop {
+from { opacity:0; transform: scale(0.5) rotate(-5deg); }
+to   { opacity:1; transform: scale(1) rotate(0deg); }
+}
+
+.word-cat-badge {
+font-size: 0.7rem;
+color: var(–ink3);
+background: rgba(26,20,16,0.05);
+padding: 3px 10px;
+border-radius: 20px;
+}
+
+/* Timer bar */
+.timer-track {
+width: 100%;
+height: 8px;
+background: rgba(26,20,16,0.08);
+border-radius: 8px;
+overflow: hidden;
+}
+
+.timer-fill {
+height: 100%;
+background: var(–green);
+border-radius: 8px;
+transition: width 0.1s linear, background 0.5s;
+width: 100%;
+}
+
+.timer-fill.warn { background: var(–amber); }
+.timer-fill.danger { background: var(–red); }
+
+/* Input area */
+.input-wrap {
+width: 100%;
+position: relative;
+}
+
+.word-input {
+width: 100%;
+padding: 18px 56px 18px 18px;
+background: var(–paper);
+border: 2px solid rgba(26,20,16,0.15);
+border-radius: 16px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 1.2rem;
+font-weight: 700;
+color: var(–ink);
+outline: none;
+transition: all 0.2s;
+text-align: right;
+box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+direction: rtl;
+}
+
+.word-input:focus { border-color: var(–red); box-shadow: 0 0 0 4px rgba(230,48,48,0.12); }
+.word-input::placeholder { color: var(–ink3); font-weight: 400; }
+
+.send-btn {
+position: absolute;
+left: 10px;
+top: 50%;
+transform: translateY(-50%);
+width: 40px;
+height: 40px;
+background: var(–ink);
+border: none;
+border-radius: 10px;
+color: white;
+font-size: 1.2rem;
+cursor: pointer;
+transition: all 0.15s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.send-btn:hover { background: var(–red); transform: translateY(-50%) scale(1.08); }
+
+/* History tape */
+.history-tape {
+width: 100%;
+display: flex;
+flex-wrap: wrap;
+gap: 6px;
+min-height: 36px;
+direction: rtl;
+}
+
+.history-chip {
+padding: 4px 12px;
+border-radius: 30px;
+font-size: 0.75rem;
+font-weight: 700;
+animation: chipIn 0.3s cubic-bezier(.34,1.56,.64,1) both;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.history-chip.correct { background: rgba(26,138,74,0.12); color: var(–green); border: 1px solid rgba(26,138,74,0.25); }
+.history-chip.skipped { background: rgba(154,138,114,0.12); color: var(–ink3); border: 1px solid rgba(154,138,114,0.25); }
+.history-chip.timeout { background: rgba(230,48,48,0.1); color: var(–red); border: 1px solid rgba(230,48,48,0.2); }
+
+@keyframes chipIn {
+from { opacity:0; transform: scale(0.7); }
+to   { opacity:1; transform: scale(1); }
+}
+
+.next-btn {
+width: 100%;
+padding: 16px;
+background: var(–green);
+color: white;
+border: none;
+border-radius: 14px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 1rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.next-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+.skip-link {
+font-size: 0.8rem;
+color: var(–ink3);
+cursor: pointer;
+transition: color 0.2s;
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+
+.skip-link:hover { color: var(–ink); }
+
+.answered-banner {
+width: 100%;
+border-radius: 14px;
+padding: 14px;
+text-align: center;
+font-weight: 700;
+font-size: 1rem;
+animation: chipIn 0.3s ease;
+}
+
+.answered-banner.ok { background: rgba(26,138,74,0.12); color: var(–green); border: 1px solid rgba(26,138,74,0.3); }
+.answered-banner.no { background: rgba(230,48,48,0.1); color: var(–red); border: 1px solid rgba(230,48,48,0.25); }
+
+/* ========== DUO MODE ========== */
+.duo-stage {
+width: 100%;
+background: var(–paper);
+border-radius: 24px;
+padding: 28px 20px;
+text-align: center;
+box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+border: 1px solid rgba(26,20,16,0.07);
+position: relative;
+overflow: hidden;
+}
+
+.duo-stage::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 4px;
+background: linear-gradient(90deg, var(–amber), var(–red));
+}
+
+.duo-word {
+font-family: ‘Readex Pro’, sans-serif;
+font-size: 2.5rem;
+font-weight: 700;
+color: var(–ink);
+margin: 10px 0;
+animation: wordPop 0.4s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.duo-hint { font-size: 0.72rem; color: var(–ink3); letter-spacing: 1px; text-transform: uppercase; }
+
+.players-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+width: 100%;
+}
+
+.player-box {
+background: var(–paper);
+border: 2px solid var(–line);
+border-radius: 16px;
+padding: 14px;
+text-align: center;
+transition: all 0.3s;
+}
+
+.player-box.ready { border-color: var(–green); background: rgba(26,138,74,0.06); }
+.player-box.match-win { border-color: var(–amber); background: rgba(212,130,10,0.08); animation: matchPulse 0.5s ease; }
+
+@keyframes matchPulse {
+0%,100% { transform: scale(1); }
+50% { transform: scale(1.04); }
+}
+
+.player-name { font-size: 0.75rem; color: var(–ink3); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.player-score { font-family: ‘Readex Pro’, sans-serif; font-size: 1.8rem; font-weight: 700; color: var(–ink); line-height: 1; margin-bottom: 8px; }
+
+.player-input {
+width: 100%;
+padding: 10px 12px;
+background: rgba(26,20,16,0.04);
+border: 1.5px solid var(–line);
+border-radius: 10px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 0.95rem;
+font-weight: 700;
+color: var(–ink);
+outline: none;
+text-align: center;
+transition: all 0.2s;
+direction: rtl;
+}
+
+.player-input:focus { border-color: var(–amber); background: rgba(212,130,10,0.05); }
+.player-input:disabled { opacity: 0.5; }
+.player-input.locked { background: rgba(26,138,74,0.08); border-color: var(–green); color: var(–green); }
+
+.match-announce {
+width: 100%;
+background: linear-gradient(135deg, rgba(212,130,10,0.15), rgba(230,48,48,0.1));
+border: 2px solid var(–amber);
+border-radius: 16px;
+padding: 16px;
+text-align: center;
+animation: chipIn 0.4s cubic-bezier(.34,1.56,.64,1);
+display: none;
+}
+
+.match-announce.show { display: block; }
+.match-announce-title { font-size: 1.2rem; font-weight: 800; color: var(–amber); }
+.match-announce-word { font-size: 0.9rem; color: var(–ink2); margin-top: 4px; }
+
+.duo-next-btn {
+width: 100%;
+padding: 15px;
+background: var(–ink);
+color: white;
+border: none;
+border-radius: 14px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 1rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.duo-next-btn:hover { background: var(–red); transform: translateY(-2px); }
+
+/* ========== RESULT ========== */
+.result-card {
+width: 100%;
+background: var(–paper);
+border-radius: 24px;
+padding: 32px 24px;
+text-align: center;
+box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+animation: dropIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.result-big-emoji { font-size: 5rem; display: block; margin-bottom: 8px; }
+.result-title { font-family: ‘Readex Pro’, sans-serif; font-size: 1.8rem; font-weight: 700; color: var(–ink); }
+.result-sub { font-size: 0.88rem; color: var(–ink3); margin: 6px 0 24px; }
+
+.result-stat-row {
+display: flex;
+justify-content: center;
+gap: 16px;
+margin-bottom: 24px;
+}
+
+.result-stat {
+background: rgba(26,20,16,0.04);
+border-radius: 14px;
+padding: 16px 20px;
+min-width: 80px;
+}
+
+.rstat-num { font-family: ‘Readex Pro’, sans-serif; font-size: 2rem; font-weight: 700; color: var(–ink); }
+.rstat-lbl { font-size: 0.7rem; color: var(–ink3); text-transform: uppercase; letter-spacing: 1px; }
+.rstat-num.green { color: var(–green); }
+.rstat-num.red { color: var(–red); }
+
+.rplay-btn {
+width: 100%;
+padding: 16px;
+background: var(–ink);
+color: white;
+border: none;
+border-radius: 14px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 1.05rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+margin-bottom: 10px;
+}
+
+.rplay-btn:hover { background: var(–red); transform: translateY(-2px); }
+
+.rhome-btn {
+width: 100%;
+padding: 13px;
+background: transparent;
+color: var(–ink3);
+border: 1.5px solid var(–line);
+border-radius: 14px;
+font-family: ‘Almarai’, sans-serif;
+font-size: 0.95rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.rhome-btn:hover { border-color: var(–ink); color: var(–ink); }
+
+/* Confetti */
+.confetti-piece {
+position: fixed;
+pointer-events: none;
+z-index: 999;
+animation: cfall var(–d) var(–del) ease-in forwards;
+border-radius: 2px;
+}
+
+@keyframes cfall {
+0%   { transform: translateY(-10px) rotate(0); opacity:1; }
+100% { transform: translateY(105vh) rotate(540deg); opacity:0; }
+}
+
+/* Progress dots */
+.prog-dots {
+display: flex;
+gap: 5px;
+justify-content: center;
+flex-wrap: wrap;
+}
+
+.prog-dot {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: rgba(26,20,16,0.1);
+transition: all 0.3s;
+}
+
+.prog-dot.done-ok { background: var(–green); }
+.prog-dot.done-no { background: var(–red); }
+.prog-dot.done-skip { background: var(–ink3); }
+.prog-dot.current { background: var(–amber); transform: scale(1.3); }
+</style>
+
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== HOME ===== -->
+
+  <div class="screen active" id="screenHome">
+    <div class="brand">
+      <span class="brand-icon">🧠</span>
+      <div class="brand-title">أول كلمة <span class="brand-em">تخطر ببالك!</span></div>
+      <div class="brand-sub">لا إجابة صحيحة أو خاطئة — فقط أسرع ما يخطر ببالك</div>
+    </div>
+
+```
+<div class="modes-title">اختر نمط اللعب</div>
+
+<div class="mode-cards">
+  <div class="mode-card selected" data-mode="solo" onclick="selectMode(this)">
+    <span class="mode-icon">🎯</span>
+    <div class="mode-info">
+      <div class="mode-name">فردي — تحدِّ نفسك</div>
+      <div class="mode-desc">اكتب أسرع إجابة قبل انتهاء الوقت وراكم النقاط</div>
+    </div>
+  </div>
+  <div class="mode-card" data-mode="duo" onclick="selectMode(this)">
+    <span class="mode-icon">🤝</span>
+    <div class="mode-info">
+      <div class="mode-name">ثنائي — تطابق التفكير</div>
+      <div class="mode-desc">لاعبان، نفس الكلمة — من يكتب نفس الإجابة يفوز!</div>
+    </div>
+    <span class="mode-badge">جديد</span>
+  </div>
+</div>
+
+<div class="modes-title" style="margin-top:4px">الفئة</div>
+
+<div class="cat-row">
+  <button class="cat-pill active" data-cat="all" onclick="selectCat(this)">🎲 الكل</button>
+  <button class="cat-pill" data-cat="daily" onclick="selectCat(this)">🏠 يومية</button>
+  <button class="cat-pill" data-cat="feelings" onclick="selectCat(this)">😂 مشاعر</button>
+  <button class="cat-pill" data-cat="places" onclick="selectCat(this)">📍 أماكن</button>
+  <button class="cat-pill" data-cat="random" onclick="selectCat(this)">🌀 عشوائية</button>
+</div>
+
+<button class="play-btn" onclick="startGame()">▶ ابدأ اللعبة</button>
+```
+
+  </div>
+
+  <!-- ===== SOLO GAME ===== -->
+
+  <div class="screen" id="screenSolo">
+    <div class="game-top">
+      <div class="score-tag">
+        <div class="score-lbl">النقاط</div>
+        <div class="score-num" id="soloScore">0</div>
+      </div>
+      <div class="prog-dots" id="progDots"></div>
+      <div class="round-tag" id="soloRound">١ / ١٠</div>
+    </div>
+
+```
+<div class="timer-track">
+  <div class="timer-fill" id="timerFill"></div>
+</div>
+
+<div class="word-stage">
+  <div class="word-hint">أول كلمة تخطر ببالك</div>
+  <div class="word-big" id="soloWord">—</div>
+  <div class="word-cat-badge" id="soloCat">—</div>
+</div>
+
+<div class="history-tape" id="historyTape"></div>
+
+<div id="soloInputArea">
+  <div class="input-wrap">
+    <input class="word-input" id="soloInput" type="text" placeholder="اكتب هنا..." autocomplete="off" spellcheck="false" oninput="onSoloInput()" onkeydown="onSoloKey(event)">
+    <button class="send-btn" onclick="submitSolo()">↵</button>
+  </div>
+  <div style="text-align:center">
+    <span class="skip-link" onclick="skipSolo()">تخطي ←</span>
+  </div>
+</div>
+
+<div class="answered-banner ok" id="answerBannerOk" style="display:none"></div>
+<div class="answered-banner no" id="answerBannerNo" style="display:none"></div>
+```
+
+  </div>
+
+  <!-- ===== DUO GAME ===== -->
+
+  <div class="screen" id="screenDuo">
+    <div class="game-top">
+      <div class="score-tag">
+        <div class="score-lbl" style="font-size:0.55rem">تطابقات</div>
+        <div class="score-num" id="duoMatches">0</div>
+      </div>
+      <div class="round-tag" id="duoRound">١ / ١٠</div>
+    </div>
+
+```
+<div class="duo-stage">
+  <div class="duo-hint">الكلمة التالية</div>
+  <div class="duo-word" id="duoWord">—</div>
+  <div class="word-cat-badge" id="duoCat">—</div>
+</div>
+
+<div class="players-grid">
+  <div class="player-box" id="p1box">
+    <div class="player-name">🎮 لاعب ١</div>
+    <div class="player-score" id="p1score">0</div>
+    <input class="player-input" id="p1input" type="text" placeholder="إجابتك..." autocomplete="off" spellcheck="false" oninput="onDuoInput(1)" onkeydown="onDuoKey(event,1)">
+  </div>
+  <div class="player-box" id="p2box">
+    <div class="player-name">🎮 لاعب ٢</div>
+    <div class="player-score" id="p2score">0</div>
+    <input class="player-input" id="p2input" type="text" placeholder="إجابتك..." autocomplete="off" spellcheck="false" oninput="onDuoInput(2)" onkeydown="onDuoKey(event,2)">
+  </div>
+</div>
+
+<div class="match-announce" id="matchAnnounce">
+  <div class="match-announce-title">🎉 تطابق! +٢ لكل لاعب</div>
+  <div class="match-announce-word" id="matchWord"></div>
+</div>
+
+<button class="duo-next-btn" id="duoNextBtn" onclick="duoNext()" style="display:none">التالية ←</button>
+```
+
+  </div>
+
+  <!-- ===== RESULT ===== -->
+
+  <div class="screen" id="screenResult">
+    <div class="result-card">
+      <span class="result-big-emoji" id="rEmoji">🎉</span>
+      <div class="result-title" id="rTitle">أحسنت!</div>
+      <div class="result-sub" id="rSub">انتهت الجولة</div>
+
+```
+  <div class="result-stat-row" id="rStats"></div>
+
+  <button class="rplay-btn" onclick="replayGame()">🔄 العب مجدداً</button>
+  <button class="rhome-btn" onclick="goHome()">🏠 الرئيسية</button>
+</div>
+```
+
+  </div>
+
+</div>
+
+<script>
+// ====== DATA ======
+const words = {
+  daily:    ["قهوة","منبه","وسادة","شاحن","مفاتيح","زحمة","مطر","عطر","مرآة","نظارة","محفظة","باب","نافذة","ثلاجة","ملعقة","صابون","فوطة","حذاء","ساعة","مصعد","درج","مكتب","كرسي","كمبيوتر","مروحة"],
+  feelings: ["جوع","نوم","ضحك","خوف","خجل","ورطة","كذب","هدية","مفاجأة","حلم","ملل","إجازة","دوام","راتب","فاتورة","فطور","غداء","عشاء","حلى","دايت","رياضة","عضلات","كسل","حماس","انتظار"],
+  places:   ["بحر","بر","حديقة","سوق","مطار","طائرة","فندق","مستشفى","مدرسة","جامعة","عرس","حفلة","سفر","سينما","ملعب","مسبح","حلاق","خياط","مغسلة","صيدلية","بقالة","مطعم","كوفي شوب","خيمة","استراحة"],
+  random:   ["ليمون","شطة","ملح","سكر","فلفل","بصل","ثوم","عسل","نملة","صرصور","أسد","قطة","كلب","قمر","شمس","غيمة","نار","ثلج","كهرباء","ذهب","حديد","خشب","ورق","خيط","حجر"]
+};
+
+const catLabels = { daily:"🏠 يومية", feelings:"😂 مشاعر", places:"📍 أماكن", random:"🌀 عشوائية" };
+
+// ====== STATE ======
+let gameMode = 'solo';
+let selectedCatKey = 'all';
+const TOTAL = 10;
+const TIMER = 7; // seconds
+
+let pool = [];
+let currentIdx = 0;
+let soloScore = 0;
+let soloResults = []; // 'ok','skip','timeout'
+let timerInterval = null;
+let timeLeft = TIMER;
+let answered = false;
+
+// DUO
+let duoMatches = 0;
+let p1Points = 0;
+let p2Points = 0;
+let p1locked = false;
+let p2locked = false;
+let duoRound = 0;
+
+// ====== UI HELPERS ======
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function selectMode(el) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  gameMode = el.dataset.mode;
+}
+
+function selectCat(el) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  selectedCatKey = el.dataset.cat;
+}
+
+// ====== BUILD POOL ======
+function buildPool() {
+  let arr = [];
+  if (selectedCatKey === 'all') {
+    Object.entries(words).forEach(([cat, ws]) => ws.forEach(w => arr.push({ w, cat })));
+  } else {
+    words[selectedCatKey].forEach(w => arr.push({ w, cat: selectedCatKey }));
+  }
+  return arr.sort(() => Math.random() - 0.5).slice(0, TOTAL);
+}
+
+// ====== START ======
+function startGame() {
+  pool = buildPool();
+  currentIdx = 0;
+
+  if (gameMode === 'solo') {
+    soloScore = 0;
+    soloResults = [];
+    buildProgDots();
+    showScreen('screenSolo');
+    loadSoloRound();
+  } else {
+    duoMatches = 0;
+    p1Points = 0;
+    p2Points = 0;
+    duoRound = 0;
+    showScreen('screenDuo');
+    loadDuoRound();
+  }
+}
+
+// ====== SOLO ======
+function buildProgDots() {
+  const container = document.getElementById('progDots');
+  container.innerHTML = '';
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'prog-dot' + (i === 0 ? ' current' : '');
+    d.id = 'dot' + i;
+    container.appendChild(d);
+  }
+}
+
+function loadSoloRound() {
+  if (currentIdx >= TOTAL) { endGame(); return; }
+
+  answered = false;
+  const item = pool[currentIdx];
+
+  // Reset UI
+  const wordEl = document.getElementById('soloWord');
+  wordEl.style.animation = 'none';
+  wordEl.offsetHeight;
+  wordEl.style.animation = 'wordPop 0.4s cubic-bezier(.34,1.56,.64,1) both';
+  wordEl.textContent = item.w;
+  document.getElementById('soloCat').textContent = catLabels[item.cat] || '';
+  document.getElementById('soloRound').textContent = toArabicNum(currentIdx + 1) + ' / ' + toArabicNum(TOTAL);
+  document.getElementById('soloScore').textContent = soloScore;
+
+  document.getElementById('soloInput').value = '';
+  document.getElementById('soloInput').disabled = false;
+  document.getElementById('soloInput').focus();
+  document.getElementById('soloInputArea').style.display = 'block';
+  document.getElementById('answerBannerOk').style.display = 'none';
+  document.getElementById('answerBannerNo').style.display = 'none';
+
+  // Update dot
+  if (currentIdx > 0) {
+    const prevDot = document.getElementById('dot' + (currentIdx - 1));
+    if (prevDot) {
+      prevDot.classList.remove('current');
+      const r = soloResults[currentIdx - 1];
+      if (r === 'ok') prevDot.classList.add('done-ok');
+      else if (r === 'skip') prevDot.classList.add('done-skip');
+      else prevDot.classList.add('done-no');
+    }
+  }
+  const curDot = document.getElementById('dot' + currentIdx);
+  if (curDot) curDot.classList.add('current');
+
+  startSoloTimer();
+}
+
+function startSoloTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIMER;
+  updateTimerBar();
+
+  timerInterval = setInterval(() => {
+    timeLeft -= 0.05;
+    if (timeLeft <= 0) {
+      timeLeft = 0;
+      clearInterval(timerInterval);
+      onSoloTimeout();
+    }
+    updateTimerBar();
+  }, 50);
+}
+
+function updateTimerBar() {
+  const fill = document.getElementById('timerFill');
+  const pct = (timeLeft / TIMER) * 100;
+  fill.style.width = pct + '%';
+  fill.className = 'timer-fill' + (pct < 30 ? ' danger' : pct < 55 ? ' warn' : '');
+}
+
+function onSoloTimeout() {
+  if (answered) return;
+  answered = true;
+  soloResults.push('timeout');
+  document.getElementById('soloInput').disabled = true;
+  document.getElementById('soloInputArea').style.display = 'none';
+  const banner = document.getElementById('answerBannerNo');
+  banner.textContent = '⏰ انتهى الوقت! لا نقاط';
+  banner.style.display = 'block';
+  addHistoryChip(pool[currentIdx].w, '—', 'timeout');
+  setTimeout(() => { currentIdx++; loadSoloRound(); }, 1500);
+}
+
+function onSoloInput() {
+  // auto-submit on space after word
+  const val = document.getElementById('soloInput').value.trim();
+  if (val.endsWith(' ') && val.trim().length > 1) {
+    submitSolo();
+  }
+}
+
+function onSoloKey(e) {
+  if (e.key === 'Enter') submitSolo();
+}
+
+function submitSolo() {
+  if (answered) return;
+  const val = document.getElementById('soloInput').value.trim();
+  if (!val) return;
+
+  clearInterval(timerInterval);
+  answered = true;
+
+  const timeTaken = TIMER - timeLeft;
+  const pts = timeTaken <= 2 ? 3 : timeTaken <= 4 ? 2 : 1;
+  soloScore += pts;
+  soloResults.push('ok');
+
+  document.getElementById('soloInput').disabled = true;
+  document.getElementById('soloInputArea').style.display = 'none';
+  const banner = document.getElementById('answerBannerOk');
+  banner.textContent = `✅ "${val}" — +${pts} نقطة${pts === 3 ? ' ⚡ سريع!' : ''}`;
+  banner.style.display = 'block';
+  addHistoryChip(pool[currentIdx].w, val, 'correct');
+
+  setTimeout(() => { currentIdx++; loadSoloRound(); }, 1200);
+}
+
+function skipSolo() {
+  if (answered) return;
+  clearInterval(timerInterval);
+  answered = true;
+  soloResults.push('skip');
+  document.getElementById('soloInputArea').style.display = 'none';
+  const banner = document.getElementById('answerBannerNo');
+  banner.textContent = '⏭ تم التخطي — 0 نقطة';
+  banner.style.display = 'block';
+  addHistoryChip(pool[currentIdx].w, '—', 'skipped');
+  setTimeout(() => { currentIdx++; loadSoloRound(); }, 800);
+}
+
+function addHistoryChip(word, answer, type) {
+  const tape = document.getElementById('historyTape');
+  const chip = document.createElement('div');
+  chip.className = 'history-chip ' + type;
+  chip.innerHTML = `<span>${word}</span><span>→</span><span>${answer}</span>`;
+  tape.prepend(chip);
+  // Keep only last 6
+  while (tape.children.length > 6) tape.removeChild(tape.lastChild);
+}
+
+// ====== DUO ======
+function loadDuoRound() {
+  if (duoRound >= TOTAL) { endDuoGame(); return; }
+
+  p1locked = false;
+  p2locked = false;
+
+  const item = pool[duoRound];
+  const wEl = document.getElementById('duoWord');
+  wEl.style.animation = 'none';
+  wEl.offsetHeight;
+  wEl.style.animation = 'wordPop 0.4s cubic-bezier(.34,1.56,.64,1) both';
+  wEl.textContent = item.w;
+  document.getElementById('duoCat').textContent = catLabels[item.cat] || '';
+  document.getElementById('duoRound').textContent = toArabicNum(duoRound + 1) + ' / ' + toArabicNum(TOTAL);
+  document.getElementById('duoMatches').textContent = duoMatches;
+  document.getElementById('p1score').textContent = p1Points;
+  document.getElementById('p2score').textContent = p2Points;
+
+  const p1 = document.getElementById('p1input');
+  const p2 = document.getElementById('p2input');
+  p1.value = ''; p1.disabled = false; p1.className = 'player-input'; p1.placeholder = 'إجابتك...';
+  p2.value = ''; p2.disabled = false; p2.className = 'player-input'; p2.placeholder = 'إجابتك...';
+
+  document.getElementById('p1box').className = 'player-box';
+  document.getElementById('p2box').className = 'player-box';
+  document.getElementById('matchAnnounce').className = 'match-announce';
+  document.getElementById('duoNextBtn').style.display = 'none';
+}
+
+function onDuoInput(player) {
+  // check if both locked after input
+  const input = document.getElementById('p' + player + 'input');
+  if (input.value.endsWith(' ') && input.value.trim().length >= 1) {
+    lockDuoPlayer(player);
+  }
+}
+
+function onDuoKey(e, player) {
+  if (e.key === 'Enter') lockDuoPlayer(player);
+}
+
+function lockDuoPlayer(player) {
+  const input = document.getElementById('p' + player + 'input');
+  const val = input.value.trim();
+  if (!val || (player === 1 ? p1locked : p2locked)) return;
+
+  if (player === 1) p1locked = true;
+  else p2locked = true;
+
+  input.disabled = true;
+  input.className = 'player-input locked';
+  input.value = val;
+  document.getElementById('p' + player + 'box').classList.add('ready');
+
+  if (p1locked && p2locked) evaluateDuo();
+}
+
+function evaluateDuo() {
+  const a1 = document.getElementById('p1input').value.trim().toLowerCase();
+  const a2 = document.getElementById('p2input').value.trim().toLowerCase();
+
+  // normalize Arabic
+  const norm = s => s.replace(/[أإآ]/g,'ا').replace(/ة/,'ه').replace(/ى/,'ي');
+
+  if (norm(a1) === norm(a2) && a1.length > 0) {
+    // MATCH!
+    duoMatches++;
+    p1Points += 2;
+    p2Points += 2;
+    document.getElementById('p1box').classList.add('match-win');
+    document.getElementById('p2box').classList.add('match-win');
+    const ann = document.getElementById('matchAnnounce');
+    ann.className = 'match-announce show';
+    document.getElementById('matchWord').textContent = `كلاكما قال: "${a1}" 🎯`;
+    confetti();
+  }
+
+  document.getElementById('duoNextBtn').style.display = 'block';
+  document.getElementById('p1score').textContent = p1Points;
+  document.getElementById('p2score').textContent = p2Points;
+}
+
+function duoNext() {
+  duoRound++;
+  loadDuoRound();
+}
+
+function endDuoGame() {
+  clearInterval(timerInterval);
+  let emoji, title, sub;
+  if (duoMatches >= 7) { emoji='🤯'; title='عقول متزامنة!'; sub=`تطابقتم ${duoMatches} مرة من ${TOTAL}!`; }
+  else if (duoMatches >= 4) { emoji='🤝'; title='توافق رائع!'; sub=`${duoMatches} تطابقات — أصدقاء حقيقيون`; }
+  else if (duoMatches >= 1) { emoji='😄'; title='مش بطال!'; sub=`${duoMatches} تطابق — تقدرون أحسن`; }
+  else { emoji='🙈'; title='عقولكم بعيدة!'; sub='0 تطابقات — كيف أنتم أصدقاء؟!'; }
+
+  document.getElementById('rEmoji').textContent = emoji;
+  document.getElementById('rTitle').textContent = title;
+  document.getElementById('rSub').textContent = sub;
+  document.getElementById('rStats').innerHTML = `
+    <div class="result-stat"><div class="rstat-num green">${duoMatches}</div><div class="rstat-lbl">تطابقات</div></div>
+    <div class="result-stat"><div class="rstat-num">${p1Points}</div><div class="rstat-lbl">لاعب ١</div></div>
+    <div class="result-stat"><div class="rstat-num">${p2Points}</div><div class="rstat-lbl">لاعب ٢</div></div>
+  `;
+  if (duoMatches >= 4) confetti();
+  showScreen('screenResult');
+}
+
+// ====== SOLO END ======
+function endGame() {
+  clearInterval(timerInterval);
+  const oks = soloResults.filter(r => r === 'ok').length;
+  const skips = soloResults.filter(r => r === 'skip').length;
+  const timeouts = soloResults.filter(r => r === 'timeout').length;
+
+  let emoji, title, sub;
+  if (soloScore >= 25) { emoji='⚡'; title='سرعة البرق!'; sub='ردود فعل خارقة!'; }
+  else if (soloScore >= 18) { emoji='🌟'; title='ذكاء عفوي!'; sub='عقلك يعمل بسرعة'; }
+  else if (soloScore >= 12) { emoji='😎'; title='مش بطال!'; sub='تقدر تحسّن أكثر'; }
+  else { emoji='🐢'; title='خذ وقتك...'; sub='المرة القادمة أسرع!'; }
+
+  document.getElementById('rEmoji').textContent = emoji;
+  document.getElementById('rTitle').textContent = title;
+  document.getElementById('rSub').textContent = sub;
+  document.getElementById('rStats').innerHTML = `
+    <div class="result-stat"><div class="rstat-num green">${oks}</div><div class="rstat-lbl">إجابات</div></div>
+    <div class="result-stat"><div class="rstat-num" style="color:var(--amber)">${soloScore}</div><div class="rstat-lbl">نقاط</div></div>
+    <div class="result-stat"><div class="rstat-num red">${timeouts}</div><div class="rstat-lbl">فاتتك</div></div>
+  `;
+  if (soloScore >= 18) confetti();
+  showScreen('screenResult');
+}
+
+function replayGame() { startGame(); }
+function goHome() { clearInterval(timerInterval); showScreen('screenHome'); }
+
+// ====== CONFETTI ======
+function confetti() {
+  const colors = ['#e63030','#d4820a','#1a8a4a','#1a1410','#8a6a3a'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left:${Math.random()*100}vw;top:-10px;
+      width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --d:${1.2+Math.random()*1.8}s;--del:${Math.random()*1}s;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+// ====== ARABIC NUMERALS ======
+function toArabicNum(n) {
+  return n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
+</script>
+
+</body>
+</html>
